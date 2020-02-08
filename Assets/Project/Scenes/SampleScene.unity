@@ -521,7 +521,7 @@ Transform:
   m_GameObject: {fileID: 487017821}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: -0.05, z: 0}
-  m_LocalScale: {x: 10, y: 0.1, z: 7}
+  m_LocalScale: {x: 15, y: 0.1, z: 7}
   m_Children: []
   m_Father: {fileID: 911476955}
   m_RootOrder: 0
@@ -1397,14 +1397,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26b6a3e978bb6a74f86ec7118cce4ce9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sensitivity: 1
+  sensitivity: 2
   smoothValue: 1
   mouseYClamp: {x: -80, y: 80}
   crouchOffset: 0.8
   tpPosition: {x: 0, y: 0, z: -4}
   viewLerp:
     duration: 1
-  body: {fileID: 0}
+  body: {fileID: 859079357}
 --- !u!1 &1209420918
 GameObject:
   m_ObjectHideFlags: 0
@@ -1750,7 +1750,7 @@ Transform:
   m_GameObject: {fileID: 1565865963}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: -0.05, z: 0}
-  m_LocalScale: {x: 10, y: 0.1, z: 7}
+  m_LocalScale: {x: 15, y: 0.1, z: 7}
   m_Children: []
   m_Father: {fileID: 1317226743}
   m_RootOrder: 0
