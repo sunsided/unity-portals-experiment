@@ -34,3 +34,8 @@ Coding Adventures: Portals](https://www.youtube.com/watch?v=cWpFZbjtSQg).
   and then projected onto the portal; instead, fiddling with the
   camera's frustum or using clipping by fiddling with the Z buffer
   may improve performance.
+
+## Third-party packages
+
+- [dantogno's First Person Character Controller](https://github.com/dantogno/first-person-character-controller),
+  an FPS controller based on Cinemachine.
