@@ -40,7 +40,7 @@ public class WieldableMotion : MonoBehaviour
 
     private void Update()
     {
-        Vector3 positionForce = default;
+        var positionForce = default(Vector3);
 
         //Get the current velocity.
         var velocity = pHandler.CurrentVelocity;
