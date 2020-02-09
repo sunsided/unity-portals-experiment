@@ -39,6 +39,8 @@ namespace Project
         /// </remarks>
         public void Render()
         {
+            if (!VisibleFromCamera(linkedPortal.screen, _playerCamera)) return;
+
             screen.enabled = false;
             CreateViewTexture();
 
@@ -51,6 +53,12 @@ namespace Project
             _portalCamera.Render();
 
             screen.enabled = true;
+        }
+
+        private static bool VisibleFromCamera(Renderer renderer, Camera camera)
+        {
+            var frustumPlanes = GeometryUtility.CalculateFrustumPlanes(camera);
+            return GeometryUtility.TestPlanesAABB(frustumPlanes, renderer.bounds);
         }
 
         private void CreateViewTexture()
