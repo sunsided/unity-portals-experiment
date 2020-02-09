@@ -107,7 +107,7 @@ namespace SimpleCharacterController.Controller.Movement
         public bool CanUncrouch()
         {
             //Check if there are colliders over the controller.
-            Collider[] hitColliders = Physics.OverlapSphere(transform.position + Vector3.up * uncrouchDetectionSphereHeightMultiplier,
+            var hitColliders = Physics.OverlapSphere(transform.position + Vector3.up * uncrouchDetectionSphereHeightMultiplier,
                 _controller.radius, uncrouchDetectionMask);
 
             //If there's nothing on top of the player, we can uncrouch.

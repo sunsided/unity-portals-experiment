@@ -13,6 +13,21 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/Assets/Project/Scripts/PlayerPortalRenderer.cs">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/Assets/Project/Scripts/Portal.cs">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/Assets/Project/Shaders/Portal Shader.shader">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/Assets/SimpleCharacterController/Scripts/Controller/Camera/CameraHandler.cs">
           <value>
             <set />
