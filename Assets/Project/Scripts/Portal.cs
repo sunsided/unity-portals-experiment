@@ -1,11 +1,16 @@
-﻿using TMPro.EditorUtilities;
+﻿using System.Diagnostics;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace Project
 {
     public class Portal : MonoBehaviour
     {
         private static readonly int MainTex = Shader.PropertyToID("_MainTex");
+
+#if UNITY_EDITOR
+        private static Texture2D _disabledPortalTexture;
+#endif
 
         [SerializeField]
         private Portal linkedPortal;
@@ -29,6 +34,8 @@ namespace Project
             _portalCamera.CopyFrom(_playerCamera);
 
             _portalCamera.enabled = false;
+
+            EditorCreateDisabledPortalTexture();
         }
 
         /// <summary>
@@ -39,7 +46,11 @@ namespace Project
         /// </remarks>
         public void Render()
         {
-            if (!VisibleFromCamera(linkedPortal.screen, _playerCamera)) return;
+            if (!VisibleFromCamera(linkedPortal.screen, _playerCamera))
+            {
+                EditorColorDisabledPortal();
+                return;
+            }
 
             screen.enabled = false;
             CreateViewTexture();
@@ -50,6 +61,7 @@ namespace Project
             _portalCamera.transform.SetPositionAndRotation(m.GetColumn(3), m.rotation);
 
             // Render the camera (to the texture).
+            // TODO: Can we limit the camera's rendering to only the section covered by the portal itself?
             _portalCamera.Render();
 
             screen.enabled = true;
@@ -61,10 +73,43 @@ namespace Project
             return GeometryUtility.TestPlanesAABB(frustumPlanes, renderer.bounds);
         }
 
+        [Conditional("UNITY_EDITOR")]
+        private static void EditorCreateDisabledPortalTexture()
+        {
+#if UNITY_EDITOR
+            _disabledPortalTexture = new Texture2D(1, 1);
+            _disabledPortalTexture.SetPixel(0, 0, Color.red);
+            _disabledPortalTexture.Apply();
+#endif
+        }
+
+        [Conditional("UNITY_EDITOR")]
+        private void EditorColorDisabledPortal()
+        {
+#if UNITY_EDITOR
+            linkedPortal.screen.material.SetTexture(MainTex, _disabledPortalTexture);
+#endif
+        }
+
+        [Conditional("UNITY_EDITOR")]
+        private void EditorReestablishViewTextureForPortal()
+        {
+            if (_viewTexture == null) return;
+#if UNITY_EDITOR
+            linkedPortal.screen.material.SetTexture(MainTex, _viewTexture);
+#endif
+        }
+
         private void CreateViewTexture()
         {
             var viewTextureExists = _viewTexture != null;
-            if (viewTextureExists && _viewTexture.width == Screen.width && _viewTexture.height == Screen.height) return;
+            if (viewTextureExists && _viewTexture.width == Screen.width && _viewTexture.height == Screen.height)
+            {
+                // Since we're using hint textures for disabled portals,
+                // we need to ensure that a disabled portal is re-enabled again.
+                EditorReestablishViewTextureForPortal();
+                return;
+            }
             if (viewTextureExists) _viewTexture.Release();
 
             _viewTexture = new RenderTexture(Screen.width, Screen.height, 0);
