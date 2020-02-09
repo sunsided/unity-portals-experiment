@@ -1,7 +1,7 @@
 # Playing with Portals
 
-An attempt at re-implementing Sebastian Lague's
-[Portals](https://www.youtube.com/watch?v=cWpFZbjtSQg) conding adventure.
+An attempt at re-implementing [Sebastian Lague's
+Coding Adventures: Portals](https://www.youtube.com/watch?v=cWpFZbjtSQg).
 
 ![](.readme/editor.jpg)
 
