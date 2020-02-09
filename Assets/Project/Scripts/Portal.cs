@@ -53,10 +53,10 @@ namespace Project
             for (var index = 0; index < _trackedTravellers.Count; ++index)
             {
                 var traveller = _trackedTravellers[index];
-                var travellerTransform = traveller.transform;
+                var travellerTransform = traveller.EntityTransform;
                 var travellerPosition = travellerTransform.position;
 
-                Debug.LogFormat(gameObject, "Processing traveller {0}={2} in portal {1}={3}.", traveller.gameObject.name, gameObject.name, travellerPosition, portalPosition);
+                Debug.LogFormat(gameObject, "Processing traveller {0}={2} in portal {1}={3}.", traveller.EntityTransform.gameObject.name, gameObject.name, travellerPosition, portalPosition);
 
                 // Teleport the traveller if it has crossed from one side
                 // of the portal to the other.
@@ -65,7 +65,7 @@ namespace Project
                 var portalSideBefore = Math.Sign(Vector3.Dot(traveller.PreviousOffsetFromPortal, portalForward));
                 if (portalSideNow != portalSideBefore)
                 {
-                    Debug.LogWarningFormat(gameObject, "Traveller {0} traversed portal {1}; sending to {2}={3}.", traveller.gameObject.name, gameObject.name, linkedPortal.gameObject.name, linkedPortal.transform.position);
+                    Debug.LogWarningFormat(gameObject, "Traveller {0} traversed portal {1}; sending to {2}={3}.", traveller.EntityTransform.gameObject.name, gameObject.name, linkedPortal.gameObject.name, linkedPortal.transform.position);
 
                     var m = linkedPortalTransform.localToWorldMatrix * portalTransform.worldToLocalMatrix * travellerTransform.localToWorldMatrix;
                     traveller.Teleport(portalTransform, linkedPortalTransform, m.GetColumn(3), m.rotation);
@@ -85,18 +85,18 @@ namespace Project
         private void OnTravellerEnterPortal(PortalTraveller traveller)
         {
             if (_trackedTravellers.Contains(traveller)) return;
-            Debug.LogWarningFormat(traveller, "Traveller {0}={2} entered portal {1}={3}.", traveller.gameObject.name, gameObject.name, traveller.transform.position, transform.position);
+            Debug.LogWarningFormat(traveller, "Traveller {0}={2} entered portal {1}={3}.", traveller.EntityTransform.gameObject.name, gameObject.name, traveller.transform.position, transform.position);
 
             traveller.EnterPortalThreshold();
-            traveller.PreviousOffsetFromPortal = traveller.transform.position - transform.position;
+            traveller.PreviousOffsetFromPortal = traveller.EntityTransform.position - transform.position;
             _trackedTravellers.Add(traveller);
         }
 
         private void OnTriggerEnter(Collider other)
         {
             var traveller = other.GetComponent<PortalTraveller>();
-            if (!traveller) return;
-            Debug.LogErrorFormat(traveller, "Trigger reports: Traveller {0}={2} entered portal {1}={3}.", traveller.gameObject.name, gameObject.name, traveller.transform.position, transform.position);
+            if (!traveller || _trackedTravellers.Contains(traveller)) return;
+            Debug.LogErrorFormat(traveller, "Trigger reports: Traveller {0}={2} entered portal {1}={3}.", traveller.EntityTransform.gameObject.name, gameObject.name, traveller.EntityTransform.position, transform.position);
             OnTravellerEnterPortal(traveller);
         }
 
@@ -104,12 +104,11 @@ namespace Project
         {
             var traveller = other.GetComponent<PortalTraveller>();
             if (!traveller || !_trackedTravellers.Contains(traveller)) return;
-            Debug.LogErrorFormat(traveller, "Trigger reports: Traveller {0}={2} leaves portal {1}={3}.", traveller.gameObject.name, gameObject.name, traveller.transform.position, transform.position);
+            Debug.LogErrorFormat(traveller, "Trigger reports: Traveller {0}={2} leaves portal {1}={3}.", traveller.EntityTransform.gameObject.name, gameObject.name, traveller.EntityTransform.position, transform.position);
 
             traveller.ExitPortalThreshold();
             _trackedTravellers.Remove(traveller);
         }
-
 
         /// <summary>
         /// Renders the portal.
