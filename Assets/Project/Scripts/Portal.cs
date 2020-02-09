@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
@@ -22,6 +24,8 @@ namespace Project
         private Camera _portalCamera;
         private RenderTexture _viewTexture;
 
+        private readonly List<PortalTraveller> _trackedTravellers = new List<PortalTraveller>(1);
+
         private void Awake()
         {
             Debug.Assert(screen != null, "screen != null");
@@ -36,6 +40,58 @@ namespace Project
             _portalCamera.enabled = false;
 
             EditorCreateDisabledPortalTexture();
+        }
+
+        private void OnTriggerEnter(Collider other)
+        {
+            var traveller = other.GetComponent<PortalTraveller>();
+            if (!traveller) return;
+            OnTravellerEnterPortal(traveller);
+        }
+
+        private void OnTriggerExit(Collider other)
+        {
+            var traveller = other.GetComponent<PortalTraveller>();
+            if (!traveller) return;
+            traveller.ExitPortalThreshold();
+            _trackedTravellers.Remove(traveller);
+        }
+
+        private void LateUpdate()
+        {
+            var portalTransform = transform;
+            var portalForward = portalTransform.forward;
+            var portalPosition = portalTransform.position;
+
+            var linkedPortalTransform = linkedPortal.transform;
+
+            for (var index = 0; index < _trackedTravellers.Count; index++)
+            {
+                var traveller = _trackedTravellers[index];
+                var travellerTransform = traveller.transform;
+                var travellerPosition = travellerTransform.position;
+
+                // Teleport the traveller if it has crossed from one side
+                // of the portal to the other.
+                var offsetFromPortal = travellerPosition - portalPosition;
+                var portalSideNow = Math.Sign(Vector3.Dot(offsetFromPortal, portalForward));
+                var portalSideBefore = Math.Sign(Vector3.Dot(traveller.PreviousOffsetFromPortal, portalForward));
+                if (portalSideNow != portalSideBefore)
+                {
+                    var m = linkedPortalTransform.localToWorldMatrix * portalTransform.worldToLocalMatrix *
+                            travellerTransform.localToWorldMatrix;
+                    traveller.Teleport(portalTransform, linkedPortalTransform, m.GetColumn(3), m.rotation);
+
+                    // Can't rely on OnTriggerEnter/Exit to be called next frame because it depends on when FixedUpdate runs.
+                    linkedPortal.OnTravellerEnterPortal(traveller);
+
+                    // Remove the traveller and retry the current index.
+                    _trackedTravellers.RemoveAt(index);
+                    --index;
+                }
+
+                traveller.PreviousOffsetFromPortal = offsetFromPortal;
+            }
         }
 
         /// <summary>
@@ -119,6 +175,14 @@ namespace Project
 
             // Display the view texture on the screen of the linked portal.
             linkedPortal.screen.material.SetTexture(MainTex, _viewTexture);
+        }
+
+        private void OnTravellerEnterPortal(PortalTraveller traveller)
+        {
+            if (_trackedTravellers.Contains(traveller)) return;
+            traveller.EnterPortalThreshold();
+            traveller.PreviousOffsetFromPortal = traveller.transform.position - transform.position;
+            _trackedTravellers.Add(traveller);
         }
     }
 }

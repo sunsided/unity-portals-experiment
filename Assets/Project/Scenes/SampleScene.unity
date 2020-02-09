@@ -1003,6 +1003,7 @@ GameObject:
   - component: {fileID: 859079358}
   - component: {fileID: 859079362}
   - component: {fileID: 859079363}
+  - component: {fileID: 859079361}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -1086,6 +1087,18 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 859079356}
   m_Mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &859079361
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 859079356}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d1b18b92fa54b0d8c19a6617f6976d2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!143 &859079362
 CharacterController:
   m_ObjectHideFlags: 0
@@ -2113,10 +2126,35 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.y
       value: 90
       objectReference: {fileID: 0}
+    - target: {fileID: 2534197562872432402, guid: 2771304de8afbbe41a9edf9aa1fd7efb,
+        type: 3}
+      propertyPath: m_IsTrigger
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2534197562872432402, guid: 2771304de8afbbe41a9edf9aa1fd7efb,
+        type: 3}
+      propertyPath: m_Size.x
+      value: 9.999999
+      objectReference: {fileID: 0}
+    - target: {fileID: 2534197562872432402, guid: 2771304de8afbbe41a9edf9aa1fd7efb,
+        type: 3}
+      propertyPath: m_Size.y
+      value: 0.00000029802322
+      objectReference: {fileID: 0}
+    - target: {fileID: 2534197562872432402, guid: 2771304de8afbbe41a9edf9aa1fd7efb,
+        type: 3}
+      propertyPath: m_Size.z
+      value: 9.999999
+      objectReference: {fileID: 0}
     - target: {fileID: 3513308695147016927, guid: 2771304de8afbbe41a9edf9aa1fd7efb,
         type: 3}
       propertyPath: m_Depth
       value: -2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3513308695147016927, guid: 2771304de8afbbe41a9edf9aa1fd7efb,
+        type: 3}
+      propertyPath: m_AllowDynamicResolution
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3794560567514501979, guid: 2771304de8afbbe41a9edf9aa1fd7efb,
         type: 3}
