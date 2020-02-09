@@ -14,13 +14,12 @@ namespace SimpleCharacterController.Controller
 
         private void Awake()
         {
-            //Get a reference to the character motor component.
             _motor = GetComponent<CharacterMotor>();
-
-            //Get a reference to the camera handler component.
             _cameraHandler = GetComponentInChildren<CameraHandler>();
+        }
 
-            //Get a reference to the player handler.
+        private void Start()
+        {
             _pHandler = Manager.Instance.PlayerHandler;
         }
 
@@ -29,38 +28,30 @@ namespace SimpleCharacterController.Controller
             _pHandler.Horizontal = Input.GetAxisRaw("Horizontal");
             _pHandler.Vertical = Input.GetAxisRaw("Vertical");
 
-            //Toggle third person mode when pressing the key.
+            // TODO: Replace with Input.GetAxis().
             if (Input.GetKeyDown(KeyCode.Tab))
             {
-                //Toggle the value.
                 _pHandler.ThirdPerson = !_pHandler.ThirdPerson;
-
-                //Event for view change.
                 _cameraHandler.OnViewChange();
             }
 
-            //Toggle crouching when pressing the key.
+            // TODO: Replace with Input.GetAxis().
             if (Input.GetKeyDown(KeyCode.C))
             {
-                //Check if we can stop crouching if we need to, or just crouch.
                 if (_pHandler.IsCrouched && _motor.CanUncrouch() || _pHandler.IsCrouched == false)
                 {
-                    //Toggle the value.
                     _pHandler.IsCrouched = !_pHandler.IsCrouched;
-
-                    //Let the character motor know we changed the state.
                     _motor.OnToggleCrouch();
-
-                    //Change the camera view.
                     _cameraHandler.OnViewChange();
                 }
             }
 
-            //If the player is standing.
             if (_pHandler.IsCrouched == false)
             {
-                //Jump & Run Inputs.
+                // TODO: Replace with Input.GetAxis().
                 _pHandler.Jump = Input.GetKey(KeyCode.Space);
+
+                // TODO: Replace with Input.GetAxis().
                 _pHandler.IsRunning = Input.GetKey(KeyCode.LeftShift);
             }
 

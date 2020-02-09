@@ -43,7 +43,7 @@ public class WieldableMotion : MonoBehaviour
         Vector3 positionForce = default;
 
         //Get the current velocity.
-        Vector3 velocity = pHandler.CurrentVelocity;
+        var velocity = pHandler.CurrentVelocity;
         velocity.y = 0f;
 
         //Add the bob force.

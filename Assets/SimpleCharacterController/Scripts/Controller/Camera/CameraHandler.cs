@@ -77,10 +77,10 @@ namespace SimpleCharacterController.Controller.Camera
                 _inViewTransition = false;
 
             //Calculate the position the camera should be at when in first person. (Based on crouch state)
-            Vector3 nPosition = _pHandler.IsCrouched ? _normalPosition - (Vector3.up * crouchOffset) : _normalPosition;
+            var nPosition = _pHandler.IsCrouched ? _normalPosition - Vector3.up * crouchOffset : _normalPosition;
 
             //Goal position for the camera.
-            Vector3 goalPosition = _pHandler.ThirdPerson ? tpPosition : nPosition;
+            var goalPosition = _pHandler.ThirdPerson ? tpPosition : nPosition;
 
             //Lerp the position.
             transform.localPosition = Vector3.Lerp(transform.localPosition, goalPosition, viewLerp.InterpolatedValue);
@@ -96,8 +96,8 @@ namespace SimpleCharacterController.Controller.Camera
             //Clamp the rotation on the y axis.
             _mouseY = ClampRotation(_mouseY, mouseYClamp.x, mouseYClamp.y);
 
-            Quaternion pivotRotation = Quaternion.identity;
-            Quaternion cameraRotation = transform.localRotation;
+            Quaternion pivotRotation;
+            var cameraRotation = transform.localRotation;
 
             //If we're in third person.
             if (_pHandler.ThirdPerson)
@@ -124,10 +124,8 @@ namespace SimpleCharacterController.Controller.Camera
 
         private float ClampRotation(float angle, float min, float max)
         {
-            if (angle > 360)
-                angle -= 360;
-            else if (angle < -360)
-                angle += 360;
+            if (angle > 360) angle -= 360;
+            else if (angle < -360) angle += 360;
 
             return Mathf.Clamp(angle, min, max);
         }
