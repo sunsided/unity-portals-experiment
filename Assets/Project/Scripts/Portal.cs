@@ -42,21 +42,6 @@ namespace Project
             EditorCreateDisabledPortalTexture();
         }
 
-        private void OnTriggerEnter(Collider other)
-        {
-            var traveller = other.GetComponent<PortalTraveller>();
-            if (!traveller) return;
-            OnTravellerEnterPortal(traveller);
-        }
-
-        private void OnTriggerExit(Collider other)
-        {
-            var traveller = other.GetComponent<PortalTraveller>();
-            if (!traveller) return;
-            traveller.ExitPortalThreshold();
-            _trackedTravellers.Remove(traveller);
-        }
-
         private void LateUpdate()
         {
             var portalTransform = transform;
@@ -65,11 +50,13 @@ namespace Project
 
             var linkedPortalTransform = linkedPortal.transform;
 
-            for (var index = 0; index < _trackedTravellers.Count; index++)
+            for (var index = 0; index < _trackedTravellers.Count; ++index)
             {
                 var traveller = _trackedTravellers[index];
                 var travellerTransform = traveller.transform;
                 var travellerPosition = travellerTransform.position;
+
+                Debug.LogFormat(gameObject, "Processing traveller {0}={2} in portal {1}={3}.", traveller.gameObject.name, gameObject.name, travellerPosition, portalPosition);
 
                 // Teleport the traveller if it has crossed from one side
                 // of the portal to the other.
@@ -78,8 +65,9 @@ namespace Project
                 var portalSideBefore = Math.Sign(Vector3.Dot(traveller.PreviousOffsetFromPortal, portalForward));
                 if (portalSideNow != portalSideBefore)
                 {
-                    var m = linkedPortalTransform.localToWorldMatrix * portalTransform.worldToLocalMatrix *
-                            travellerTransform.localToWorldMatrix;
+                    Debug.LogWarningFormat(gameObject, "Traveller {0} traversed portal {1}; sending to {2}={3}.", traveller.gameObject.name, gameObject.name, linkedPortal.gameObject.name, linkedPortal.transform.position);
+
+                    var m = linkedPortalTransform.localToWorldMatrix * portalTransform.worldToLocalMatrix * travellerTransform.localToWorldMatrix;
                     traveller.Teleport(portalTransform, linkedPortalTransform, m.GetColumn(3), m.rotation);
 
                     // Can't rely on OnTriggerEnter/Exit to be called next frame because it depends on when FixedUpdate runs.
@@ -93,6 +81,35 @@ namespace Project
                 traveller.PreviousOffsetFromPortal = offsetFromPortal;
             }
         }
+
+        private void OnTravellerEnterPortal(PortalTraveller traveller)
+        {
+            if (_trackedTravellers.Contains(traveller)) return;
+            Debug.LogWarningFormat(traveller, "Traveller {0}={2} entered portal {1}={3}.", traveller.gameObject.name, gameObject.name, traveller.transform.position, transform.position);
+
+            traveller.EnterPortalThreshold();
+            traveller.PreviousOffsetFromPortal = traveller.transform.position - transform.position;
+            _trackedTravellers.Add(traveller);
+        }
+
+        private void OnTriggerEnter(Collider other)
+        {
+            var traveller = other.GetComponent<PortalTraveller>();
+            if (!traveller) return;
+            Debug.LogErrorFormat(traveller, "Trigger reports: Traveller {0}={2} entered portal {1}={3}.", traveller.gameObject.name, gameObject.name, traveller.transform.position, transform.position);
+            OnTravellerEnterPortal(traveller);
+        }
+
+        private void OnTriggerExit(Collider other)
+        {
+            var traveller = other.GetComponent<PortalTraveller>();
+            if (!traveller || !_trackedTravellers.Contains(traveller)) return;
+            Debug.LogErrorFormat(traveller, "Trigger reports: Traveller {0}={2} leaves portal {1}={3}.", traveller.gameObject.name, gameObject.name, traveller.transform.position, transform.position);
+
+            traveller.ExitPortalThreshold();
+            _trackedTravellers.Remove(traveller);
+        }
+
 
         /// <summary>
         /// Renders the portal.
@@ -117,7 +134,7 @@ namespace Project
             _portalCamera.transform.SetPositionAndRotation(m.GetColumn(3), m.rotation);
 
             // Render the camera (to the texture).
-            // TODO: Can we limit the camera's rendering to only the section covered by the portal itself?
+            // TODO: Can we limit the camera's rendering to only the section covered by the portal itself? Adjust the frustum?
             _portalCamera.Render();
 
             screen.enabled = true;
@@ -175,14 +192,6 @@ namespace Project
 
             // Display the view texture on the screen of the linked portal.
             linkedPortal.screen.material.SetTexture(MainTex, _viewTexture);
-        }
-
-        private void OnTravellerEnterPortal(PortalTraveller traveller)
-        {
-            if (_trackedTravellers.Contains(traveller)) return;
-            traveller.EnterPortalThreshold();
-            traveller.PreviousOffsetFromPortal = traveller.transform.position - transform.position;
-            _trackedTravellers.Add(traveller);
         }
     }
 }
